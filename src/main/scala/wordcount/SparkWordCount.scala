@@ -1,5 +1,7 @@
 package wordcount
 
+import java.util.Scanner
+
 import org.apache.spark.sql.SparkSession
 
 object SparkWordCount extends App {
@@ -12,4 +14,6 @@ object SparkWordCount extends App {
     .count()
 
   println(s"************** Total Words : $count")
+  new Scanner(System.in).nextLine() // to make the spark ui wait
+
 }

@@ -18,9 +18,9 @@ services:
       - 7005
       - 7077
       - 6066
-      - 4040
+      - 4041
     ports:
-      - 4040:4040
+      - 4041:4041
       - 6066:6066
       - 7077:7077
       - 8080:8080
@@ -84,9 +84,9 @@ services:
     environment:
       SPARK_PUBLIC_DNS: localhost
     expose:
-      - 4041
+      - 4040
     ports:
-      - 4041:4041
+      - 4040:4040
     working_dir: /app
     tty: true
     volumes:
