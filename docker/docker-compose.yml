@@ -89,6 +89,22 @@ services:
     ports:
       - 8081:8081
       - 8881:8881
+  sparkworker_2:
+    image: gettyimages/spark:2.3.0-hadoop-2.8
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://sparkmaster:7077
+    hostname: sparkworker_2
+    environment:
+      SPARK_CONF_DIR: /app/conf/spark
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 1g
+      SPARK_WORKER_PORT: 8882
+      SPARK_WORKER_WEBUI_PORT: 8082
+      SPARK_PUBLIC_DNS: localhost
+      SPARK_KAFKA_VERSION: 0.10
+    depends_on:
+      - sparkmaster
+    ports:
+      - 8082:8082
   spark_cli:
     image: gettyimages/spark:2.3.0-hadoop-2.8
     command: bash
@@ -101,12 +117,26 @@ services:
     ports:
       - 4040:4040
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
     ports:
       - 9200:9200
       - 9300:9300
     environment:
       - "discovery.type=single-node"
+#    networks:
+#      - elastic
+    volumes:
+      - data01:/usr/share/elasticsearch/data1
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.1
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+
+
 volumes:
-  esdata:
+  data01:
     driver: local

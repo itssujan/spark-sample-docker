@@ -2,14 +2,19 @@ package covid
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{col, from_json, _}
-import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
+import org.apache.spark.sql.types.{
+  DateType,
+  IntegerType,
+  StringType,
+  StructType
+}
 
 object CovidDataProcesser extends App {
   val spark: SparkSession =
     SparkSession.builder().appName("CovidDataProcesser").getOrCreate()
 
   val covidDataSchema = new StructType()
-    .add("date", StringType)
+    .add("date", DateType)
     .add("county", StringType)
     .add("state", StringType)
     .add("fips", StringType)
@@ -39,7 +44,7 @@ object CovidDataProcesser extends App {
   df1.writeStream
     .format("org.elasticsearch.spark.sql")
     .outputMode("append")
-    .option("es.resource", "{state}")
+    .option("es.resource", "st_{state}")
     .option("es.nodes", "elasticsearch")
     .option("checkpointLocation", "checkpoint")
     .start()
