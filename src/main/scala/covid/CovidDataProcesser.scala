@@ -12,7 +12,7 @@ object CovidDataProcesser extends App {
     .add("date", StringType)
     .add("county", StringType)
     .add("state", StringType)
-    .add("fips", IntegerType)
+    .add("fips", StringType)
     .add("cases", IntegerType)
     .add("deaths", IntegerType)
 
@@ -26,24 +26,23 @@ object CovidDataProcesser extends App {
         .alias("parsed_value")
     )
 
-  df.select(col("parsed_value.*"))
+  val df1 = df
+    .select(col("parsed_value.*"))
     .withColumn("state", lower(col("state")))
-    .withColumn("state", regexp_replace(col("state"), "\\s+", ""))
+    .withColumn("state", regexp_replace(col("state"), "\\s+", "_"))
     .toDF()
-    .writeStream
+
+  df1.writeStream
     .format("console")
     .start()
 
-//  df.select(col("parsed_value.*"))
-//    .withColumn("state", lower(col("state")))
-//    .withColumn("state", regexp_replace(col("state"), "\\s+", ""))
-//    .writeStream
-//    .format("org.elasticsearch.spark.sql")
-//    .outputMode("append")
-//    .option("es.resource", "{state}")
-//    .option("es.nodes", "elasticsearch")
-//    .option("checkpointLocation", "checkpoint")
-//    .start()
+  df1.writeStream
+    .format("org.elasticsearch.spark.sql")
+    .outputMode("append")
+    .option("es.resource", "{state}")
+    .option("es.nodes", "elasticsearch")
+    .option("checkpointLocation", "checkpoint")
+    .start()
 
   spark.streams.awaitAnyTermination()
 
