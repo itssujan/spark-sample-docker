@@ -1,3 +1,4 @@
 #!/bin/bash
 set -ex
+rm -rf checkpoint
 ./bin/docker-compose exec spark_cli bin/deploy.sh

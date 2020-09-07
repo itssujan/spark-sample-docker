@@ -4,3 +4,6 @@
 
 /build/
 /target/
+
+/checkpoint/
+/project/target/
