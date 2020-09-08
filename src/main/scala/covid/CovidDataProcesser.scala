@@ -14,7 +14,7 @@ object CovidDataProcesser extends App {
     SparkSession.builder().appName("CovidDataProcesser").getOrCreate()
 
   val covidDataSchema = new StructType()
-    .add("date", DateType)
+    .add("date", StringType)
     .add("county", StringType)
     .add("state", StringType)
     .add("fips", StringType)
@@ -38,15 +38,15 @@ object CovidDataProcesser extends App {
     .toDF()
 
   df1.writeStream
-    .format("console")
-    .start()
-
-  df1.writeStream
     .format("org.elasticsearch.spark.sql")
     .outputMode("append")
     .option("es.resource", "st_{state}")
     .option("es.nodes", "elasticsearch")
     .option("checkpointLocation", "checkpoint")
+    .start()
+
+  df1.writeStream
+    .format("console")
     .start()
 
   spark.streams.awaitAnyTermination()
